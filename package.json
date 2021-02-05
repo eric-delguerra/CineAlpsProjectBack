@@ -1,0 +1,19 @@
+{
+  "name": "cinealpsprojectback",
+  "version": "1.0.0",
+  "description": "",
+  "main": "\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[C\u001b[C\u001b[C\u001b[C",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eric-delguerra/CineAlpsProjectBack.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eric-delguerra/CineAlpsProjectBack/issues"
+  },
+  "homepage": "https://github.com/eric-delguerra/CineAlpsProjectBack#readme"
+}

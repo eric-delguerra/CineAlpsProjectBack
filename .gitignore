@@ -1,0 +1,7 @@
+.env
+.env.test
+
+
+# Dependency directories
+node_modules/
+jspm_packages/

@@ -1,6 +1,6 @@
 .env
 .env.test
-
+.idea/
 
 # Dependency directories
 node_modules/

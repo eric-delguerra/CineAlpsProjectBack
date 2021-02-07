@@ -13,6 +13,78 @@ let Role = class {
                 .catch((err)=>next(err))
         })
     }
+    getRoleById(id){
+        return new Promise((next)=>{
+            this.db.query('SELECT * FROM role WHERE id = ? ',[id])
+                .then((result)=> next(result[0]))
+                .catch((err)=>next(err))
+        })
+    }
+    addRole(roleName){
+        return new Promise((next)=>{
+            if(roleName != undefined && roleName.trim() != ''){
+                roleName = roleName.trim()
+                this.db.query('SELECT name FROM role WHERE name =?',[roleName])
+                    .then((result)=>{
+                        console.log(result[0])
+                        if(result[0] !== undefined){
+                            next(new Error('Ce role existe déjà'))
+                        }else{
+                            this.db.query('INSERT INTO role (name)VALUES (?)',[roleName])
+                                .then((res)=>{
+                                    next('Le role: '+ roleName +' a bien été ajoutée' )
+                                }).catch((err)=>{
+                                next(err)
+                            })
+                        }
+                    }).catch((err)=>{
+                    next(err)
+                })
+            }else{
+                next(new Error('pas de valeur nom'))
+            }
+        })
+    }
+    updateRole(name,newName){
+        return new Promise((next)=>{
+            if (name != undefined && name.trim() != '') {
+
+                name = name.trim()
+                this.db.query('SELECT * FROM role WHERE name = ?', [name])
+                    .then((result) => {
+                        if (result[0] !== undefined) {
+                            this.db.query('UPDATE role SET name = ? WHERE name = ?', [newName,name])
+                                .then((res)=> next(res))
+                                .catch((err)=>next(err))
+                        }else{
+                            next(new Error('ce role n\'existe pas'))
+                        }
+                    })
+            }else{
+                next(new Error('pas de valeur'))
+            }
+        })
+    }
+    deleteRole(idRole){
+        return new Promise((next)=> {
+            this.db.query('SELECT * FROM role WHERE id = ?',[idRole])
+                .then((result) => {
+                    if (result[0] !== undefined) {
+                        this.db.query('DELETE FROM role WHERE id =?',[idRole])
+                            .then((result2) => {
+                                next('le role'+result.name+'a bien été supprimé')
+                            }).catch((err) => {
+                            next(err)
+                        })
+                    }else{
+                        next(new Error('ce role n\'existe pas'))
+                    }
+                }).catch((err) => {
+                next(err)
+            })
+        })
+    }
+
 }
 
 module.exports = Role

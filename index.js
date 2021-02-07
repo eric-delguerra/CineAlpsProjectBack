@@ -59,9 +59,55 @@ mysql.createConnection({
     RoutesRole.route('/getAllRoles')
         .get(async (req, res) => {
             let getRoles = await role.getAllRoles()
-            console.log('ca passe')
             res.json(checkAndChange(getRoles))
         })
+    RoutesRole.route('/getRoleByID/:id')
+        .get(async (req, res) => {
+            let getRole = await role.getRoleById(req.params.id)
+            res.json(checkAndChange(getRole))
+        })
+    RoutesRole.route('/addRole')
+        .post(async(req,res)=>{
+            let addRole = await role.addRole(req.body.roleName)
+            res.json(checkAndChange(addRole))
+        })
+    RoutesRole.route('/deleteRole/:id')
+        .delete(async(req,res)=>{
+            let deleteRole = await role.deleteRole(req.params.id)
+            res.json(checkAndChange(deleteRole))
+        })
+    RoutesRole.route('/updateRole')
+        .put(async(req,res)=>{
+            let updateRole = await role.updateRole(req.body.name,req.body.newName)
+            res.json(checkAndChange(updateRole))
+        })
+// routes concernant les categories
+    RoutesCategory.route('/getAllCategories')
+        .get(async (req, res) => {
+            let getAllCategories = await category.getAllCategories()
+            res.json(checkAndChange(getAllCategories))
+        })
+    RoutesCategory.route('/getCategoryByID/:id')
+        .get(async (req, res) => {
+            let getCategoryByID = await category.getCategoryById(req.params.id)
+            res.json(checkAndChange(getCategoryByID))
+        })
+    RoutesCategory.route('/addCategory')
+        .post(async(req,res)=>{
+            let addCategory = await category.addCategory(req.body.categoryName)
+            res.json(checkAndChange(addCategory))
+        })
+    RoutesCategory.route('/deleteCategory/:id')
+        .delete(async(req,res)=>{
+            let deleteCategory = await category.deleteCategory(req.params.id)
+            res.json(checkAndChange(deleteCategory))
+        })
+    RoutesCategory.route('/updateCategory')
+        .put(async(req,res)=>{
+            let updateCategory = await category.updateCategory(req.body.name,req.body.newName)
+            res.json(checkAndChange(updateCategory))
+        })
+
     //ici on concataine nos differente string et on les stock dans la variable RoutesRole pour eviter dans le cas de plusieurs route qui commenceraient
     // par le même chemin d'avoir a tout retapper à chaques fois, il suffira ensuite de rajouter uniquement la sous-route désiré
     app.use(config.rootAPI + 'role', RoutesRole)

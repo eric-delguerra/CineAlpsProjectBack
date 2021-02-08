@@ -56,6 +56,8 @@ mysql.createConnection({
     //on declare notre route son type(get) une fonction async(pour specifier a node que le resultat de cette fonction ne sera pas immediat car elle fait appel à une promesse et on rajoute await devant
     // l'appel de la fonction pour dire : attend la reponse de getAllRoles avant de continuer (si on fait pas ça le code va continuer a s'executer et le retour de cette route rique de renvoyer: undefined
     // lorsqu'on l'appelera. la fonction checkAndChange sert a mettre en forme la reponse et elle est déclaré dans le fichier de fonction))
+
+// routes concernant les roles
     RoutesRole.route('/getAllRoles')
         .get(async (req, res) => {
             let getRoles = await role.getAllRoles()
@@ -109,18 +111,6 @@ mysql.createConnection({
             res.json(checkAndChange(updateCategory))
         })
 
-// routes concernant les users
-    RoutesUser.route('/getAllUser')
-        .get(async(req,res)=> {
-            let getAllUser = await user.getAllUser()
-            res.json(checkAndChange(getAllUser))
-        })
-    RoutesUser.route('/getUserNumberByRole')
-        .get(async(req,res)=> {
-            let getUserNumberByRole = await user.getUserNumberByRole()
-            res.json(checkAndChange(getUserNumberByRole))
-        })
-
 // routes concernant les medias
     RoutesMedia.route('/getAllMedias')
         .get(async (req, res) => {
@@ -147,6 +137,73 @@ mysql.createConnection({
             let updateMedia = await media.updateMedia(req.body.name,req.body.newName,req.body.description,req.body.link,req.body.poster,req.body.isVisible,req.body.score)
             res.json(checkAndChange(updateMedia))
         })
+
+// routes concernant les awards
+    RoutesAward.route('/getAllAwards')
+        .get(async (req, res) => {
+            let getAllAwards = await award.getAllAwards()
+            res.json(checkAndChange(getAllAwards))
+        })
+    RoutesAward.route('/getAwardsByID/:id')
+        .get(async (req, res) => {
+            let getAwardById = await award.getAwardById(req.params.id)
+            res.json(checkAndChange(getAwardById))
+        })
+    RoutesAward.route('/addAwards')
+        .post(async(req,res)=>{
+            let addAward = await award.addAward(req.body.awardName)
+            res.json(checkAndChange(addAward))
+        })
+    RoutesAward.route('/deleteAwards/:id')
+        .delete(async(req,res)=>{
+            let deleteAwards = await award.deleteAward(req.params.id)
+            res.json(checkAndChange(deleteAwards))
+        })
+    RoutesAward.route('/updateAwards')
+        .put(async(req,res)=>{
+            let updateAwards = await award.updateAward(req.body.name,req.body.newName)
+            res.json(checkAndChange(updateAwards))
+        })
+// routes concernant les invitations
+    RoutesInvitation.route('/addInvitation')
+        .post(async (req, res) => {
+            let addInvitation = await invitation.addInvitation(req.body.first_name,req.body.last_name,req.body.email,req.body.role)
+            res.json(checkAndChange(addInvitation))
+        })
+    RoutesInvitation.route('/getAllInvitation')
+        .get(async (req, res) => {
+            let getAllInvitation = await invitation.getAllInvitation()
+            res.json(checkAndChange(getAllInvitation))
+        })
+    RoutesInvitation.route('/getInvitationByID/:id')
+        .get(async (req, res) => {
+            let Invitation = await invitation.getInvitationId(req.params.id)
+            res.json(checkAndChange(Invitation))
+        })
+    RoutesInvitation.route('/deleteInvitation/:id')
+        .delete(async(req,res)=>{
+            let deleteInvitation = await invitation.deleteInvitation(req.params.id)
+            res.json(checkAndChange(deleteInvitation))
+        })
+    RoutesInvitation.route('/updateInvitation')
+        .put(async(req,res)=>{
+            let updateInvitation = await invitation.updateInvitation(req.body.first_name,req.body.last_name,req.body.email,req.body.role,req.body.isActive,req.body.invited)
+            res.json(checkAndChange(updateInvitation))
+        })
+
+// routes concernant les users
+    RoutesUser.route('/getAllUser')
+        .get(async(req,res)=> {
+            let getAllUser = await user.getAllUser()
+            res.json(checkAndChange(getAllUser))
+        })
+    RoutesUser.route('/getUserNumberByRole')
+        .get(async(req,res)=> {
+            let getUserNumberByRole = await user.getUserNumberByRole()
+            res.json(checkAndChange(getUserNumberByRole))
+        })
+
+
 
     //ici on concataine nos differente string et on les stock dans la variable RoutesRole pour eviter dans le cas de plusieurs route qui commenceraient
     // par le même chemin d'avoir a tout retapper à chaques fois, il suffira ensuite de rajouter uniquement la sous-route désiré

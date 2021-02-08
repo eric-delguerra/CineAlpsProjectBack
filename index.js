@@ -81,6 +81,7 @@ mysql.createConnection({
             let updateRole = await role.updateRole(req.body.name,req.body.newName)
             res.json(checkAndChange(updateRole))
         })
+
 // routes concernant les categories
     RoutesCategory.route('/getAllCategories')
         .get(async (req, res) => {
@@ -106,6 +107,45 @@ mysql.createConnection({
         .put(async(req,res)=>{
             let updateCategory = await category.updateCategory(req.body.name,req.body.newName)
             res.json(checkAndChange(updateCategory))
+        })
+
+// routes concernant les users
+    RoutesUser.route('/getAllUser')
+        .get(async(req,res)=> {
+            let getAllUser = await user.getAllUser()
+            res.json(checkAndChange(getAllUser))
+        })
+    RoutesUser.route('/getUserNumberByRole')
+        .get(async(req,res)=> {
+            let getUserNumberByRole = await user.getUserNumberByRole()
+            res.json(checkAndChange(getUserNumberByRole))
+        })
+
+// routes concernant les medias
+    RoutesMedia.route('/getAllMedias')
+        .get(async (req, res) => {
+            let getAllMedias = await media.getAllMedias()
+            res.json(checkAndChange(getAllMedias))
+        })
+    RoutesMedia.route('/getMediaByID/:id')
+        .get(async (req, res) => {
+            let getMediaByID = await media.getMediaById(req.params.id)
+            res.json(checkAndChange(getMediaByID))
+        })
+    RoutesMedia.route('/addMedia')
+        .post(async(req,res)=>{
+            let addMedia = await media.addMedia(req.body.MediaName,req.body.description,req.body.link,req.body.poster)
+            res.json(checkAndChange(addMedia))
+        })
+    RoutesMedia.route('/deleteMedia/:id')
+        .delete(async(req,res)=>{
+            let deleteMedia = await media.deleteMedia(req.params.id)
+            res.json(checkAndChange(deleteMedia))
+        })
+    RoutesMedia.route('/updateMedia')
+        .put(async(req,res)=>{
+            let updateMedia = await media.updateMedia(req.body.name,req.body.newName,req.body.description,req.body.link,req.body.poster,req.body.isVisible,req.body.score)
+            res.json(checkAndChange(updateMedia))
         })
 
     //ici on concataine nos differente string et on les stock dans la variable RoutesRole pour eviter dans le cas de plusieurs route qui commenceraient

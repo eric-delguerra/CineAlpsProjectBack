@@ -86,7 +86,12 @@ let Role = class {
     }
     getRoleWithUserID(id){
         return new Promise((next)=>{
-            this.db.query('SELECT * FROM role LEFT JOIN WHERE id = ?',[idRole])
+            this.db.query('SELECT * FROM role LEFT JOIN user_role ON role.id = user_role.id_role WHERE user_role.id_user = ?',[id])
+                .then((res)=>{
+                    next({idRole:res[0].id,roleName:res[0].name})
+                }).catch((err)=>{
+                    next(err)
+            })
         })
     }
 

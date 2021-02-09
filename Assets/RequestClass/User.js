@@ -1,11 +1,14 @@
 const bcrypt = require('bcrypt');
+const RoleClass = require('./Role')
 
 //c'est la qu'on va faire nos requetes en base de données
 
 let User = class {
+
 //on appel notre class dans un autre fichier et on lui passe en parametres la base de données sur laquelle on travail
     constructor(_dbCineAlpes){
         this.db = _dbCineAlpes
+        this.role = new RoleClass(this.db)
     }
 //le declaration se fait sous forme de promesse avec le parametre next qui est une fonction qui renverra le resultat que ce soit dans le .then ou dans le .catch
     getAllUser(){
@@ -75,19 +78,36 @@ let User = class {
         })
     }
 
-     checkAuth(email, password) {
+   checkAuth(email, password) {
+
         return new Promise((next) => {
             this.db.query('SELECT * FROM user WHERE email = ? ', [email])
                 .then((result) => {
                     if (result[0] !== undefined) {
-                        const user =  this.getUserById(result[0].id)
-                        bcrypt.compare(password,result[0].password, function(err, result) {
-                            if(result === true){
-                                next(user)
-                            }else{
-                                next(new Error('mot de passe incorect'))
-                            }
-                        });
+                        const user = Promise.all([this.getUserById(result[0].id),this.role.getRoleWithUserID(result[0].id)])
+                            user.then((values)=>{
+                            bcrypt.compare(password,result[0].password, function(err, result) {
+                                if(result === true){
+                                    console.log(values )
+                                    next({
+                                        id:values[0][0].id,
+                                        first_name: values[0][0].first_name,
+                                        last_name: values[0][0].last_name,
+                                        email: values[0][0].email,
+                                        password: values[0][0].password,
+                                        phone_number: values[0][0].phone_number,
+                                        created_at: values[0][0].created_at,
+                                        last_connection: values[0][0].last_connection,
+                                        asVoted:values[0][0].asVoted,
+                                        idRole:values[1].idRole,
+                                        roleName:values[1].roleName
+                                    })
+                                }else{
+                                    next(new Error('mot de passe incorect'))
+                                }
+                            });
+                        })
+
                     } else {
                         next(new Error('cet utilisateur n\'existe pas'))
                     }

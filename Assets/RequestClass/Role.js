@@ -84,6 +84,11 @@ let Role = class {
             })
         })
     }
+    getRoleWithUserID(id){
+        return new Promise((next)=>{
+            this.db.query('SELECT * FROM role LEFT JOIN WHERE id = ?',[idRole])
+        })
+    }
 
 }
 

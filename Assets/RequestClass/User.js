@@ -81,9 +81,6 @@ let User = class {
                 .then((result) => {
                     if (result[0] !== undefined) {
                         const user =  this.getUserById(result[0].id)
-                        console.log(result[0])
-                        let idUser = result[0].id
-                        console.log(idUser)
                         bcrypt.compare(password,result[0].password, function(err, result) {
                             if(result === true){
                                 next(user)

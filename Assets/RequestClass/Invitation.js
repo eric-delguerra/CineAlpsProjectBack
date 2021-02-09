@@ -15,32 +15,7 @@ let Invitation = class {
                 .catch((err)=>next(err))
         })
     }
-<<<<<<< HEAD
 
-    addInvitation( first_name, last_name, email, end_date, role, isActive, invited){
-        return new Promise((next)=>{
-          if(email != undefined && email.trim() != ''){
-              email = email.trim()
-              this.db.query('SELECT email FROM invitation WHERE email =?',[email])
-                  .then((result)=>{
-                      console.log(result[0])
-                      if(result[0] !== undefined){
-                          next(new Error('Cet email existe déjà'))
-                      }else{
-                          this.db.query('INSERT INTO invitation ( first_name, last_name, email, end_date, role, isActive, invited)VALUES (?)',[ first_name, last_name, email, end_date, role, isActive, invited])
-                              .then((res)=>{
-                                  next('Invitation '+ email +' a bien été ajouté' )
-                              }).catch((err)=>{
-                                  next(err)
-                          })
-                      }
-                  }).catch((err)=>{
-                      next(err)
-              })
-          }else{
-              next(new Error('pas de valeur nom'))
-          }
-=======
     getInvitationId(id){
         return new Promise((next)=>{
             this.db.query('SELECT * FROM invitation WHERE id = ?',[id])
@@ -115,7 +90,7 @@ let Invitation = class {
                 }).catch(() => {
                 new Error('Cette invitation n\'existe pas')
             })
->>>>>>> 5f04bdffecbac8497a893848176d688537b7b95a
+
         })
     }
 }

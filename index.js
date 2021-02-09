@@ -115,7 +115,7 @@ mysql.createConnection({
  // routes concernant l'utilisateur
 
         RoutesUser.route('/getAllUser')
-        .get(async (req, res) => {
+        .get(async(req,res)=> {
             let getAllUser = await user.getAllUser()
             res.json(checkAndChange(getAllUser))
         })
@@ -130,7 +130,7 @@ mysql.createConnection({
 
             const hashedPassword = await bcrypt.hash(req.body.password, 10)
         
-            let addUser = await user.addUser( req.body.first_name, req.body.last_name, req.body.email, hashedPassword, req.body.phone_number, req.body.created_at, req.body.last_connection, req.body.asVoted)
+            let addUser = await user.addUser( req.body.first_name, req.body.last_name, req.body.email, hashedPassword, req.body.phone_number)
             res.json(checkAndChange(addUser))
         })
 
@@ -142,16 +142,14 @@ mysql.createConnection({
 
         RoutesUser.route('/checkAuth')
         .post(async (req, res) => {
-          
-              // const hashedPassword = await bcrypt.hash(req.body.password, 10)
-
-               //console.log(req.body.password)
-              // console.log(hashedPassword)
-
-              // if (bcrypt.compareSync(req.body.password, hashedPassword)) {
-
             let checkAuth = await user.checkAuth(req.body.email, req.body.password)
             res.json(checkAndChange(checkAuth))  
+        })
+
+        RoutesUser.route('/getUserNumberByRole')
+        .get(async(req,res)=> {
+            let getUserNumberByRole = await user.getUserNumberByRole()
+            res.json(checkAndChange(getUserNumberByRole))
         })
 
 // routes concernant les medias
@@ -233,19 +231,6 @@ mysql.createConnection({
             let updateInvitation = await invitation.updateInvitation(req.body.first_name,req.body.last_name,req.body.email,req.body.role,req.body.isActive,req.body.invited)
             res.json(checkAndChange(updateInvitation))
         })
-
-// routes concernant les users
-    RoutesUser.route('/getAllUser')
-        .get(async(req,res)=> {
-            let getAllUser = await user.getAllUser()
-            res.json(checkAndChange(getAllUser))
-        })
-    RoutesUser.route('/getUserNumberByRole')
-        .get(async(req,res)=> {
-            let getUserNumberByRole = await user.getUserNumberByRole()
-            res.json(checkAndChange(getUserNumberByRole))
-        })
-
 
 
     //ici on concataine nos differente string et on les stock dans la variable RoutesRole pour eviter dans le cas de plusieurs route qui commenceraient

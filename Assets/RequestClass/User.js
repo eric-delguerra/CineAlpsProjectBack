@@ -1,4 +1,7 @@
+const bcrypt = require('bcrypt');
+
 //c'est la qu'on va faire nos requetes en base de données
+
 let User = class {
 //on appel notre class dans un autre fichier et on lui passe en parametres la base de données sur laquelle on travail
     constructor(_dbCineAlpes){
@@ -32,7 +35,9 @@ let User = class {
                       if(result[0] !== undefined){
                           next(new Error('Cette email existe déjà'))
                       }else{
-                          this.db.query('INSERT INTO user (first_name, last_name, email, password, phone_number, created_at, last_connection, asVoted)VALUES (?,?,?,?,?,?,?,?)',[first_name, last_name, email, hashedPassword, phone_number, created_at, last_connection, asVoted])
+                          let createUserAt = new Date()
+
+                          this.db.query('INSERT INTO user (first_name, last_name, email, password, phone_number, created_at, last_connection)VALUES (?,?,?,?,?,?,?)',[first_name, last_name, email, hashedPassword, phone_number, createUserAt, createUserAt])
                               .then((res)=>{
                                   next('User '+ email +' a bien été ajouté' )
                               }).catch((err)=>{
@@ -70,19 +75,29 @@ let User = class {
         })
     }
 
-   checkAuth(email, password) {
-    return new Promise((next)=>{
-        this.db.query('SELECT * FROM user WHERE email = ? AND password = ?',[email, password])
-            .then((result)=>  {
-                if (result[0] !== undefined ) {
-                    next(result)
-                }
-                else  {
-                next(new Error('Résultat vide'))}
-            } )
-            .catch((err)=>next(err))
-    })
-}
+     checkAuth(email, password) {
+        return new Promise((next) => {
+            this.db.query('SELECT * FROM user WHERE email = ? ', [email])
+                .then((result) => {
+                    if (result[0] !== undefined) {
+                        const user =  this.getUserById(result[0].id)
+                        console.log(result[0])
+                        let idUser = result[0].id
+                        console.log(idUser)
+                        bcrypt.compare(password,result[0].password, function(err, result) {
+                            if(result === true){
+                                next(user)
+                            }else{
+                                next(new Error('mot de passe incorect'))
+                            }
+                        });
+                    } else {
+                        next(new Error('cet utilisateur n\'existe pas'))
+                    }
+                })
+                .catch((err) => next(err))
+        })
+    }
 
     getUserNumberByRole(){
         let UserByRole = []

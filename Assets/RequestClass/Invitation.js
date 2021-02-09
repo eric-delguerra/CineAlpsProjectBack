@@ -34,6 +34,35 @@ let Invitation = class {
    
     addInvitation(first_name,last_name,email,role, invited){
         return new Promise((next)=>{
+
+            if (invited=0) {
+
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                 auth: {
+                     user: process.env.email,
+                     pass: process.env.password
+                 }
+             });
+               
+               var mailOptions = {
+                 from: 'boitedetest38@gmail.com',
+                 to: email,
+                 subject: 'CineAlpesFestival - Formulaire d/inscription',
+                 text: `Vous avez été invité au festival ! Voila le formulaire à remplir, bisous de la prod ${email}`
+               };
+               
+               transporter.sendMail(mailOptions, function(error, info){
+                 if (error) {
+                   console.log(error);
+                 } else {
+                   console.log('Email sent: ' + info.response);
+                 }
+               });
+            }
+
+            else { next(new Error('Déja invité'))}
+
             invited=1
             if(email != undefined && email.trim() != '' && first_name != undefined && first_name.trim() != ''){
                 email = email.trim()
@@ -44,29 +73,7 @@ let Invitation = class {
 
                         if(result[0] !== undefined){
                             next(new Error('Cette invitation existe déjà'))
-                        }else{             
-                                const transporter = nodemailer.createTransport({
-                                   service: 'gmail',
-                                    auth: {
-                                        user: process.env.email,
-                                        pass: process.env.password
-                                    }
-                                });
-                                  
-                                  var mailOptions = {
-                                    from: 'boitedetest38@gmail.com',
-                                    to: email,
-                                    subject: 'CineAlpesFestival - Formulaire d/inscription',
-                                    text: `Vous avez été invité au festival ! Voila le formulaire à remplir, bisous de la prod ${email}`
-                                  };
-                                  
-                                  transporter.sendMail(mailOptions, function(error, info){
-                                    if (error) {
-                                      console.log(error);
-                                    } else {
-                                      console.log('Email sent: ' + info.response);
-                                    }
-                                  });
+                        }else{
 
                             this.db.query('INSERT INTO invitation (first_name,last_name,email,end_date,role, invited)VALUES (?,?,?,?,?,?)',[first_name,last_name,email,dt,role,invited])
                                 .then((res)=>{

@@ -17,6 +17,7 @@ const InvitationClass = require('./Assets/RequestClass/Invitation')
 const MediaClass = require('./Assets/RequestClass/Media')
 const UserClass = require('./Assets/RequestClass/User')
 const bcrypt = require('bcrypt')
+const morgan = require('morgan')('dev');
 
 
 app.listen(process.env[`${process.env.MODE}_PORT`]);
@@ -36,6 +37,7 @@ mysql.createConnection({
     app.use(cors());
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: true}));
+    app.use(morgan);
 
     let RoutesRole = express.Router()
     let RoutesAward = express.Router()
@@ -209,6 +211,11 @@ mysql.createConnection({
     RoutesInvitation.route('/addInvitation')
         .post(async (req, res) => {
             let addInvitation = await invitation.addInvitation(req.body.first_name,req.body.last_name,req.body.email,req.body.role)
+            res.json(checkAndChange(addInvitation))
+        })
+    RoutesInvitation.route('/addInvitationByMail')
+        .post(async (req, res) => {
+            let addInvitation = await invitation.addInvitation("","", req.body.email, 2)
             res.json(checkAndChange(addInvitation))
         })
     RoutesInvitation.route('/getAllInvitation')

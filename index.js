@@ -215,7 +215,7 @@ mysql.createConnection({
         })
     RoutesInvitation.route('/addInvitationByMail')
         .post(async (req, res) => {
-            let addInvitation = await invitation.addInvitation("","", req.body.email, 2)
+            let addInvitation = await invitation.addInvitationByMail(req.body.email, 2)
             res.json(checkAndChange(addInvitation))
         })
     RoutesInvitation.route('/getAllInvitation')

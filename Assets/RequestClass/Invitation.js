@@ -1,4 +1,6 @@
 var moment = require('moment');
+var nodemailer = require('nodemailer');
+require('dotenv').config();
 moment().format()
 //c'est la qu'on va faire nos requetes en base de données
 let Invitation = class {
@@ -15,7 +17,13 @@ let Invitation = class {
                 .catch((err)=>next(err))
         })
     }
-
+    getAllInvitationsNotInvited() {
+        return new Promise((next)=>{
+            this.db.query('SELECT * FROM invitation WHERE invited = 0 ')
+                .then((result)=> next(result))
+                .catch((err)=>next(err))
+        })
+    }
     getInvitationId(id){
         return new Promise((next)=>{
             this.db.query('SELECT * FROM invitation WHERE id = ?',[id])
@@ -23,8 +31,9 @@ let Invitation = class {
                 .catch((err)=>next(err))
         })
     }
-    addInvitation(first_name,last_name,email,role){
+    addInvitation(first_name,last_name,email,role, invited){
         return new Promise((next)=>{
+            invited=1
             if(email != undefined && email.trim() != '' && first_name != undefined && first_name.trim() != ''){
                 email = email.trim()
                 this.db.query('SELECT email FROM invitation WHERE email =?',[email])
@@ -34,37 +43,33 @@ let Invitation = class {
 
                         if(result[0] !== undefined){
                             next(new Error('Cette invitation existe déjà'))
-                        }else{
-                            this.db.query('INSERT INTO invitation (first_name,last_name,email,end_date,role)VALUES (?,?,?,?,?)',[first_name,last_name,email,dt,role])
-                                .then((res)=>{
-                                    next('L\'invitation cocernant : '+ email+' a bien été ajoutée' )
-                                }).catch((err)=>{
-                                next(err)
-                            })
-                        }
-                    }).catch((err)=>{
-                    next(err)
-                })
-            }else{
-                next(new Error('pas de valeur nom'))
-            }
-        })
-    }
-    addInvitationByMail(email,role){
-        return new Promise((next)=>{
-            if(email != undefined && email.trim() != ''){
-                email = email.trim()
-                this.db.query('SELECT email FROM invitation WHERE email =?',[email])
-                    .then((result)=>{
-                        let dt = new Date()
-                        dt.setMonth(6)
+                        }else{             
+                                const transporter = nodemailer.createTransport({
+                                   service: 'gmail',
+                                    auth: {
+                                        user: process.env.email,
+                                        pass: process.env.password
+                                    }
+                                });
+                                  
+                                  var mailOptions = {
+                                    from: 'boitedetest38@gmail.com',
+                                    to: email,
+                                    subject: 'CineAlpesFestival - Formulaire d/inscription',
+                                    text: `Vous avez été invité au festival ! Voila le formulaire à remplir, bisous de la prod ${email}`
+                                  };
+                                  
+                                  transporter.sendMail(mailOptions, function(error, info){
+                                    if (error) {
+                                      console.log(error);
+                                    } else {
+                                      console.log('Email sent: ' + info.response);
+                                    }
+                                  });
 
-                        if(result[0] !== undefined){
-                            next(new Error('Cette invitation existe déjà'))
-                        }else{
-                            this.db.query('INSERT INTO invitation (email,end_date,role)VALUES (?,?,?)',[email,dt,role])
+                            this.db.query('INSERT INTO invitation (first_name,last_name,email,end_date,role, invited)VALUES (?,?,?,?,?,?)',[first_name,last_name,email,dt,role,invited])
                                 .then((res)=>{
-                                    next('L\'invitation cocernant : '+ email+' a bien été ajoutée' )
+                                    next('L\'invitation concernant : '+ email+' a bien été ajoutée' )
                                 }).catch((err)=>{
                                 next(err)
                             })
@@ -117,7 +122,6 @@ let Invitation = class {
                 }).catch(() => {
                 new Error('Cette invitation n\'existe pas')
             })
-
         })
     }
 }

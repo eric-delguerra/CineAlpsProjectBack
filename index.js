@@ -19,7 +19,6 @@ const UserClass = require('./Assets/RequestClass/User')
 const bcrypt = require('bcrypt')
 const morgan = require('morgan')('dev');
 
-
 app.listen(process.env[`${process.env.MODE}_PORT`]);
 
 mysql.createConnection({
@@ -53,8 +52,6 @@ mysql.createConnection({
     let invitation = new InvitationClass(db)
     let media = new MediaClass(db)
     let user = new  UserClass(db)
-
-
 
     //on declare notre route son type(get) une fonction async(pour specifier a node que le resultat de cette fonction ne sera pas immediat car elle fait appel à une promesse et on rajoute await devant
     // l'appel de la fonction pour dire : attend la reponse de getAllRoles avant de continuer (si on fait pas ça le code va continuer a s'executer et le retour de cette route rique de renvoyer: undefined
@@ -210,7 +207,7 @@ mysql.createConnection({
 // routes concernant les invitations
     RoutesInvitation.route('/addInvitation')
         .post(async (req, res) => {
-            let addInvitation = await invitation.addInvitation(req.body.first_name,req.body.last_name,req.body.email,req.body.role)
+            let addInvitation = await invitation.addInvitation(req.body.first_name,req.body.last_name,req.body.email,req.body.role, req.body.invited)
             res.json(checkAndChange(addInvitation))
         })
     RoutesInvitation.route('/addInvitationByMail')
@@ -223,6 +220,12 @@ mysql.createConnection({
             let getAllInvitation = await invitation.getAllInvitation()
             res.json(checkAndChange(getAllInvitation))
         })
+    RoutesInvitation.route('/getAllInvitationsNotInvited')
+        .get(async (req, res) => {
+        let getAllInvitationsNotInvited = await invitation.getAllInvitationsNotInvited()
+            res.json(checkAndChange(getAllInvitationsNotInvited))
+        })
+
     RoutesInvitation.route('/getInvitationByID/:id')
         .get(async (req, res) => {
             let Invitation = await invitation.getInvitationId(req.params.id)

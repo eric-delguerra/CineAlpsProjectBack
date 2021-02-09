@@ -50,6 +50,33 @@ let Invitation = class {
             }
         })
     }
+    addInvitationByMail(email,role){
+        return new Promise((next)=>{
+            if(email != undefined && email.trim() != ''){
+                email = email.trim()
+                this.db.query('SELECT email FROM invitation WHERE email =?',[email])
+                    .then((result)=>{
+                        let dt = new Date()
+                        dt.setMonth(6)
+
+                        if(result[0] !== undefined){
+                            next(new Error('Cette invitation existe déjà'))
+                        }else{
+                            this.db.query('INSERT INTO invitation (email,end_date,role)VALUES (?,?,?)',[email,dt,role])
+                                .then((res)=>{
+                                    next('L\'invitation cocernant : '+ email+' a bien été ajoutée' )
+                                }).catch((err)=>{
+                                next(err)
+                            })
+                        }
+                    }).catch((err)=>{
+                    next(err)
+                })
+            }else{
+                next(new Error('pas de valeur nom'))
+            }
+        })
+    }
     updateInvitation(first_name,last_name,email,role,isActive,invited){
         return new Promise((next)=>{
             if(email != undefined && email.trim() != '' && first_name != undefined && first_name.trim() != '') {

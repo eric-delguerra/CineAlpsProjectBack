@@ -31,6 +31,7 @@ let Invitation = class {
                 .catch((err)=>next(err))
         })
     }
+   
     addInvitation(first_name,last_name,email,role, invited){
         return new Promise((next)=>{
             invited=1

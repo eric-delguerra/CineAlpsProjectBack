@@ -1,5 +1,4 @@
-var nodemailer = require('nodemailer');
-require('dotenv').config();
+
 const bcrypt = require('bcrypt');
 
 //c'est la qu'on va faire nos requetes en base de données
@@ -123,33 +122,6 @@ let User = class {
                 }).catch((err)=>next(err))
         })
     }
-
-    email(email) { 
-        const transporter = nodemailer.createTransport({
-           service: 'gmail',
-            auth: {
-                user: process.env.email,
-                pass: process.env.password
-            }
-        });
-          
-          var mailOptions = {
-            from: 'boitedetest38@gmail.com',
-            to: email,
-            subject: 'CineAlpesFestival - Formulaire d/inscription',
-            text: 'Si vous voulez participer voila le formulaire à remplir, bisous de la prod'
-          };
-          
-          transporter.sendMail(mailOptions, function(error, info){
-            if (error) {
-              console.log(error);
-            } else {
-              console.log('Email sent: ' + info.response);
-            }
-          });
-
-        }
-
 }
 
 module.exports = User

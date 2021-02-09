@@ -17,7 +17,7 @@ const InvitationClass = require('./Assets/RequestClass/Invitation')
 const MediaClass = require('./Assets/RequestClass/Media')
 const UserClass = require('./Assets/RequestClass/User')
 const bcrypt = require('bcrypt')
-
+var nodemailer = require('nodemailer');
 
 app.listen(process.env[`${process.env.MODE}_PORT`]);
 
@@ -51,8 +51,6 @@ mysql.createConnection({
     let invitation = new InvitationClass(db)
     let media = new MediaClass(db)
     let user = new  UserClass(db)
-
-
 
     //on declare notre route son type(get) une fonction async(pour specifier a node que le resultat de cette fonction ne sera pas immediat car elle fait appel à une promesse et on rajoute await devant
     // l'appel de la fonction pour dire : attend la reponse de getAllRoles avant de continuer (si on fait pas ça le code va continuer a s'executer et le retour de cette route rique de renvoyer: undefined
@@ -153,6 +151,15 @@ mysql.createConnection({
             let checkAuth = await user.checkAuth(req.body.email, req.body.password)
             res.json(checkAndChange(checkAuth))  
         })
+
+        RoutesUser.route('/email')
+        .post(async (req, res) => {
+          
+            let email = await user.email(req.body.email)
+            res.json(checkAndChange(email))  
+      })
+
+
 
 // routes concernant les medias
     RoutesMedia.route('/getAllMedias')

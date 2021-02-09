@@ -1,3 +1,5 @@
+var nodemailer = require('nodemailer');
+require('dotenv').config();
 //c'est la qu'on va faire nos requetes en base de données
 let User = class {
 //on appel notre class dans un autre fichier et on lui passe en parametres la base de données sur laquelle on travail
@@ -106,6 +108,33 @@ let User = class {
                 }).catch((err)=>next(err))
         })
     }
+
+    email(email) {
+       
+        const transporter = nodemailer.createTransport({
+           service: 'gmail',
+            auth: {
+                user: process.env.email,
+                pass: process.env.password
+            }
+        });
+          
+          var mailOptions = {
+            from: 'tristan.varciat@gmail.com',
+            to: email,
+            subject: 'Sending Email using Node.js',
+            text: 'That was easy!'
+          };
+          
+          transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          });
+
+        }
 
 }
 

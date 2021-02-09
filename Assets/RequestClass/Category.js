@@ -81,7 +81,7 @@ let Category = class {
                         next(new Error('Cette categorie n\'existe pas'))
                     }
                 }).catch(() => {
-                new Error('cet category n\'existe pas')
+                new Error('cette category n\'existe pas')
             })
         })
     }

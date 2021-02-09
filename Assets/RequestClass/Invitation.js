@@ -67,7 +67,7 @@ let Invitation = class {
                                     }
                                   });
 
-                            this.db.query('INSERT INTO invitation (first_name,last_name,email,end_date,role)VALUES (?,?,?,?,?)',[first_name,last_name,email,dt,role])
+                            this.db.query('INSERT INTO invitation (first_name,last_name,email,end_date,role, invited)VALUES (?,?,?,?,?,?)',[first_name,last_name,email,dt,role,invited])
                                 .then((res)=>{
                                     next('L\'invitation concernant : '+ email+' a bien été ajoutée' )
                                 }).catch((err)=>{

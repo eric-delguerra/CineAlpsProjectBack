@@ -12,6 +12,76 @@ let User = class {
                 .catch((err)=>next(err))
         })
     }
+
+    getUserById(id){
+        return new Promise((next)=>{
+            this.db.query('SELECT * FROM user WHERE id = ?',[id])
+                .then((result)=> next(result))
+                .catch((err)=>next(err))
+        })
+    }
+
+    addUser( first_name, last_name, email, hashedPassword, phone_number, created_at, last_connection, asVoted){
+        return new Promise((next)=>{
+          if(email != undefined && email.trim() != ''){
+              email = email.trim()
+              this.db.query('SELECT email FROM user WHERE email =?',[email])
+                  .then((result)=>{
+                      console.log(result[0])
+                      if(result[0] !== undefined){
+                          next(new Error('Cette email existe déjà'))
+                      }else{
+                          this.db.query('INSERT INTO user (first_name, last_name, email, password, phone_number, created_at, last_connection, asVoted)VALUES (?,?,?,?,?,?,?,?)',[first_name, last_name, email, hashedPassword, phone_number, created_at, last_connection, asVoted])
+                              .then((res)=>{
+                                  next('User '+ email +' a bien été ajouté' )
+                              }).catch((err)=>{
+                                  next(err)
+                          })
+                      }
+                  }).catch((err)=>{
+                      next(err)
+              })
+          }else{
+              next(new Error('pas de valeur nom'))
+          }
+        })
+    }
+
+    deleteUser(email){
+        return new Promise((next)=> {
+            console.log(email)
+            this.db.query('SELECT * FROM User WHERE email = ?',[email])
+                .then((result) => {
+                    console.log('1er then')
+                    if (result[0] !== undefined) {
+                        this.db.query('DELETE FROM User WHERE email =?',[email])
+                            .then((result2) => {
+                               next('user'+result.name+'a bien été supprimée')
+                            }).catch((err) => {
+                            next(err)
+                        })
+                    }else{
+                        next(new Error('Ce user n\'existe pas'))
+                    }
+                }).catch(() => {
+                new Error('Ce User n\'existe pas')
+            })
+        })
+    }
+
+   checkAuth(email, password) {
+    return new Promise((next)=>{
+        this.db.query('SELECT * FROM user WHERE email = ? AND password = ?',[email, password])
+            .then((result)=>  {
+                if (result[0] !== undefined ) {
+                    next(result)
+                }
+                else  {
+                next(new Error('Résultat vide'))}
+            } )
+            .catch((err)=>next(err))
+    })
+}
 }
 
 module.exports = User

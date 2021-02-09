@@ -16,6 +16,7 @@ const CategoryClass = require('./Assets/RequestClass/Category')
 const InvitationClass = require('./Assets/RequestClass/Invitation')
 const MediaClass = require('./Assets/RequestClass/Media')
 const UserClass = require('./Assets/RequestClass/User')
+const bcrypt = require('bcrypt')
 
 
 app.listen(process.env[`${process.env.MODE}_PORT`]);
@@ -94,6 +95,7 @@ mysql.createConnection({
         })
     RoutesCategory.route('/addCategory')
         .post(async(req,res)=>{
+
             let addCategory = await category.addCategory(req.body.categoryName)
             res.json(checkAndChange(addCategory))
         })
@@ -107,15 +109,56 @@ mysql.createConnection({
             let updateCategory = await category.updateCategory(req.body.name,req.body.newName)
             res.json(checkAndChange(updateCategory))
         })
+ // routes concernant l'utilisateur
+
+        RoutesUser.route('/getAllUser')
+        .get(async (req, res) => {
+            let getAllUser = await user.getAllUser()
+            res.json(checkAndChange(getAllUser))
+        })
+        RoutesUser.route('/getUserByID/:id')
+        .get(async (req, res) => {
+            let getUserByID = await user.getUserById(req.params.id)
+            res.json(checkAndChange(getUserByID))
+        })
+
+        RoutesUser.route('/addUser')
+        .post(async(req,res)=>{
+
+            const hashedPassword = await bcrypt.hash(req.body.password, 10)
+        
+            let addUser = await user.addUser( req.body.first_name, req.body.last_name, req.body.email, hashedPassword, req.body.phone_number, req.body.created_at, req.body.last_connection, req.body.asVoted)
+            res.json(checkAndChange(addUser))
+        })
+
+        RoutesUser.route('/deleteUser/:email')
+        .delete(async(req,res)=>{
+            let deleteUser = await user.deleteUser(req.params.email)
+            res.json(checkAndChange(deleteUser))
+        })
+
+        RoutesUser.route('/checkAuth')
+        .post(async (req, res) => {
+          
+              // const hashedPassword = await bcrypt.hash(req.body.password, 10)
+
+               //console.log(req.body.password)
+              // console.log(hashedPassword)
+
+              // if (bcrypt.compareSync(req.body.password, hashedPassword)) {
+
+            let checkAuth = await user.checkAuth(req.body.email, req.body.password)
+            res.json(checkAndChange(checkAuth))  
+        })
 
     //ici on concataine nos differente string et on les stock dans la variable RoutesRole pour eviter dans le cas de plusieurs route qui commenceraient
     // par le même chemin d'avoir a tout retapper à chaques fois, il suffira ensuite de rajouter uniquement la sous-route désiré
-    app.use(config.rootAPI + 'role', RoutesRole)
-    app.use(config.rootAPI + 'award', RoutesAward)
-    app.use(config.rootAPI + 'category', RoutesCategory)
+    app.use(config.rootAPI + 'role', RoutesRole)//
+    app.use(config.rootAPI + 'award', RoutesAward)//
+    app.use(config.rootAPI + 'category', RoutesCategory)//
     app.use(config.rootAPI + 'user', RoutesUser)
-    app.use(config.rootAPI + 'media', RoutesMedia)
-    app.use(config.rootAPI + 'invitation', RoutesInvitation)
+    app.use(config.rootAPI + 'media', RoutesMedia)//
+    app.use(config.rootAPI + 'invitation', RoutesInvitation)//
     console.log('en ecoute sur le port' + process.env[`${process.env.MODE}_PORT`])
 }).catch((err) => {
     console.log(err.message)

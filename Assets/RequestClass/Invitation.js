@@ -12,6 +12,32 @@ let Invitation = class {
                 .catch((err)=>next(err))
         })
     }
+
+    addInvitation( first_name, last_name, email, end_date, role, isActive, invited){
+        return new Promise((next)=>{
+          if(email != undefined && email.trim() != ''){
+              email = email.trim()
+              this.db.query('SELECT email FROM invitation WHERE email =?',[email])
+                  .then((result)=>{
+                      console.log(result[0])
+                      if(result[0] !== undefined){
+                          next(new Error('Cet email existe déjà'))
+                      }else{
+                          this.db.query('INSERT INTO invitation ( first_name, last_name, email, end_date, role, isActive, invited)VALUES (?)',[ first_name, last_name, email, end_date, role, isActive, invited])
+                              .then((res)=>{
+                                  next('Invitation '+ email +' a bien été ajouté' )
+                              }).catch((err)=>{
+                                  next(err)
+                          })
+                      }
+                  }).catch((err)=>{
+                      next(err)
+              })
+          }else{
+              next(new Error('pas de valeur nom'))
+          }
+        })
+    }
 }
 
 module.exports = Invitation

@@ -17,7 +17,7 @@ const InvitationClass = require('./Assets/RequestClass/Invitation')
 const MediaClass = require('./Assets/RequestClass/Media')
 const UserClass = require('./Assets/RequestClass/User')
 const bcrypt = require('bcrypt')
-var nodemailer = require('nodemailer');
+const morgan = require('morgan')('dev');
 
 app.listen(process.env[`${process.env.MODE}_PORT`]);
 
@@ -36,6 +36,7 @@ mysql.createConnection({
     app.use(cors());
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: true}));
+    app.use(morgan);
 
     let RoutesRole = express.Router()
     let RoutesAward = express.Router()
@@ -144,13 +145,6 @@ mysql.createConnection({
             res.json(checkAndChange(checkAuth))  
         })
 
-        RoutesUser.route('/email')
-        .post(async (req, res) => {
-          
-            let email = await user.email(req.body.email)
-            res.json(checkAndChange(email))  
-      })
-
         RoutesUser.route('/getUserNumberByRole')
         .get(async(req,res)=> {
             let getUserNumberByRole = await user.getUserNumberByRole()
@@ -213,7 +207,12 @@ mysql.createConnection({
 // routes concernant les invitations
     RoutesInvitation.route('/addInvitation')
         .post(async (req, res) => {
-            let addInvitation = await invitation.addInvitation(req.body.first_name,req.body.last_name,req.body.email,req.body.role)
+            let addInvitation = await invitation.addInvitation(req.body.first_name,req.body.last_name,req.body.email,req.body.role, req.body.invited)
+            res.json(checkAndChange(addInvitation))
+        })
+    RoutesInvitation.route('/addInvitationByMail')
+        .post(async (req, res) => {
+            let addInvitation = await invitation.addInvitationByMail(req.body.email, 2)
             res.json(checkAndChange(addInvitation))
         })
     RoutesInvitation.route('/getAllInvitation')
@@ -221,6 +220,12 @@ mysql.createConnection({
             let getAllInvitation = await invitation.getAllInvitation()
             res.json(checkAndChange(getAllInvitation))
         })
+    RoutesInvitation.route('/getAllInvitationsNotInvited')
+        .get(async (req, res) => {
+        let getAllInvitationsNotInvited = await invitation.getAllInvitationsNotInvited()
+            res.json(checkAndChange(getAllInvitationsNotInvited))
+        })
+
     RoutesInvitation.route('/getInvitationByID/:id')
         .get(async (req, res) => {
             let Invitation = await invitation.getInvitationId(req.params.id)

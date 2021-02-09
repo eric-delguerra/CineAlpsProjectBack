@@ -34,9 +34,7 @@ let Invitation = class {
    
     addInvitation(first_name,last_name,email,role, invited){
         return new Promise((next)=>{
-
             if (invited=0) {
-
             const transporter = nodemailer.createTransport({
                 service: 'gmail',
                  auth: {
@@ -44,7 +42,6 @@ let Invitation = class {
                      pass: process.env.password
                  }
              });
-               
                var mailOptions = {
                  from: 'boitedetest38@gmail.com',
                  to: email,
@@ -60,10 +57,9 @@ let Invitation = class {
                  }
                });
             }
-
             else { next(new Error('Déja invité'))}
-
-            invited=1
+            
+            invited==1
             if(email != undefined && email.trim() != '' && first_name != undefined && first_name.trim() != ''){
                 email = email.trim()
                 this.db.query('SELECT email FROM invitation WHERE email =?',[email])

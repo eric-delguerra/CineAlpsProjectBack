@@ -16,6 +16,7 @@ const CategoryClass = require('./Assets/RequestClass/Category')
 const InvitationClass = require('./Assets/RequestClass/Invitation')
 const MediaClass = require('./Assets/RequestClass/Media')
 const UserClass = require('./Assets/RequestClass/User')
+const EventClass = require('./Assets/RequestClass/Event')
 const bcrypt = require('bcrypt')
 const morgan = require('morgan')('dev');
 
@@ -44,6 +45,7 @@ mysql.createConnection({
     let RoutesUser = express.Router()
     let RoutesMedia = express.Router()
     let RoutesInvitation = express.Router()
+    let RoutesEvent = express.Router()
 
     //on instantie la class Role en lui passant notre base de données qu on vient de configurer et qui est representé par db
     let role = new RoleClass(db)
@@ -52,6 +54,7 @@ mysql.createConnection({
     let invitation = new InvitationClass(db)
     let media = new MediaClass(db)
     let user = new  UserClass(db)
+    let event = new EventClass(db)
 
     //on declare notre route son type(get) une fonction async(pour specifier a node que le resultat de cette fonction ne sera pas immediat car elle fait appel à une promesse et on rajoute await devant
     // l'appel de la fonction pour dire : attend la reponse de getAllRoles avant de continuer (si on fait pas ça le code va continuer a s'executer et le retour de cette route rique de renvoyer: undefined
@@ -123,7 +126,7 @@ mysql.createConnection({
             let getUserByID = await user.getUserById(req.params.id)
             res.json(checkAndChange(getUserByID))
         })
-
+        
         RoutesUser.route('/addUser')
         .post(async(req,res)=>{
 
@@ -242,6 +245,27 @@ mysql.createConnection({
             res.json(checkAndChange(updateInvitation))
         })
 
+        // routes concernant l'event
+
+        RoutesEvent.route('/getAllEvents')
+        .get(async (req, res) => {
+            let getAllEvents = await event.getAllEvents()
+            res.json(checkAndChange(getAllEvents))
+        })
+
+        RoutesEvent.route('/addEvent')
+        .post(async (req, res) => {
+            let addEvent = await event.addEvent(req.body.name,req.body.startDate,req.body.endDate,req.body.availableViewDate, req.body.theme)
+            res.json(checkAndChange(addEvent))
+        })
+
+        RoutesEvent.route('/deleteEvent/:id')
+        .delete(async(req,res)=>{
+            let deleteEvent = await event.deleteEvent(req.params.id)
+            res.json(checkAndChange(deleteEvent))
+        })
+
+
 
     //ici on concataine nos differente string et on les stock dans la variable RoutesRole pour eviter dans le cas de plusieurs route qui commenceraient
     // par le même chemin d'avoir a tout retapper à chaques fois, il suffira ensuite de rajouter uniquement la sous-route désiré
@@ -251,6 +275,7 @@ mysql.createConnection({
     app.use(config.rootAPI + 'user', RoutesUser)
     app.use(config.rootAPI + 'media', RoutesMedia)//
     app.use(config.rootAPI + 'invitation', RoutesInvitation)//
+    app.use(config.rootAPI + 'event', RoutesEvent)//
     console.log('en ecoute sur le port' + process.env[`${process.env.MODE}_PORT`])
 }).catch((err) => {
     console.log(err.message)

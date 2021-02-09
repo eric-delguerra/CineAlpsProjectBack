@@ -20,7 +20,6 @@ let User = class {
         })
     }
 
-
     getUserById(id){
         return new Promise((next)=>{
             this.db.query('SELECT * FROM user WHERE id = ?',[id])
@@ -80,7 +79,6 @@ let User = class {
     }
 
    checkAuth(email, password) {
-
         return new Promise((next) => {
             this.db.query('SELECT * FROM user WHERE email = ? ', [email])
                 .then((result) => {

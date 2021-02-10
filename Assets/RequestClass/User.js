@@ -1,7 +1,8 @@
 
 const bcrypt = require('bcrypt');
 const RoleClass = require('./Role')
-
+const MediaClass = require('./Media');
+const { promises } = require('fs');
 //c'est la qu'on va faire nos requetes en base de données
 
 let User = class {
@@ -10,6 +11,7 @@ let User = class {
     constructor(_dbCineAlpes){
         this.db = _dbCineAlpes
         this.role = new RoleClass(this.db)
+        this.media = new MediaClass(this.db)
     }
 //le declaration se fait sous forme de promesse avec le parametre next qui est une fonction qui renverra le resultat que ce soit dans le .then ou dans le .catch
     getAllUser(){
@@ -19,6 +21,15 @@ let User = class {
                 .catch((err)=>next(err))
         })
     }
+
+    getUserMedia(){
+        return new Promise((next)=>{
+            this.db.query('SELECT * FROM user_media')
+                .then((result)=> next(result))
+                .catch((err)=>next(err))
+        })
+    }
+    
     getNumberParticipants(){
         return new Promise((next)=>{
             this.db.query('SELECT COUNT (*) FROM user_role WHERE id_role = 3 ')
@@ -51,6 +62,42 @@ let User = class {
         })
     }
 
+    addUserMedia(MediaName,description,link,poster, first_name, last_name, email, hashedPassword, phone_number){
+        return new Promise((next)=>{
+
+            if(MediaName != undefined && MediaName.trim() != ''){
+                MediaName = MediaName.trim()
+                this.db.query('SELECT name FROM media WHERE name =?',[MediaName])
+                    .then((result)=>{
+                        if(result[0] !== undefined){
+                            next(new Error('Ce media existe déjà'))
+                        }else{
+                            this.db.query('INSERT INTO media (name,description,link,poster)VALUES (?,?,?,?)',[MediaName,description,link,poster])
+                                .then((res)=>{
+                                    
+                                const myIdUser =  Promise.resolve(this.addUser(first_name, last_name, email, hashedPassword, phone_number))
+                                myIdUser.then((idUser)=>{
+                                    this.db.query('INSERT INTO user_media (id_media, id_user) VALUES (?,?) ',[res.insertId, idUser.insertId])
+                                    .then(()=> {console.log("insertion User_media reussi")})
+                                    .catch((err)=>{console.log(err)})
+                                 }).catch((err)=> {
+                                     console.log(err)
+                                 })  
+                                 
+                                  next('Le media: '+ MediaName+' a bien été ajoutée' )
+                                }).catch((err)=>{
+                                next(err)
+                            })
+                        }
+                    }).catch((err)=>{
+                    next(err)
+                })
+            }else{
+                next(new Error('pas de valeur nom'))
+            }
+        })
+    }
+
     addUser( first_name, last_name, email, hashedPassword, phone_number, created_at, last_connection, asVoted){
         return new Promise((next)=>{
           if(email != undefined && email.trim() != ''){
@@ -65,10 +112,10 @@ let User = class {
 
                           this.db.query('INSERT INTO user (first_name, last_name, email, password, phone_number, created_at, last_connection)VALUES (?,?,?,?,?,?,?)',[first_name, last_name, email, hashedPassword, phone_number, createUserAt, createUserAt])
                               .then((res)=>{
-                                  next('User '+ email +' a bien été ajouté' )
+                                  next(res)
                               }).catch((err)=>{
                                   next(err)
-                          })
+                          })                       
                       }
                   }).catch((err)=>{
                       next(err)

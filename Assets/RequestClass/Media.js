@@ -43,6 +43,18 @@ let Media = class {
             }
         })
     }
+
+    getMediaWithUserID(id){
+        return new Promise((next)=>{
+            this.db.query('SELECT * FROM user LEFT JOIN user_media ON role.id = user_media.id_media WHERE user_media.id_user = ?',[id])
+                .then((res)=>{
+                    next({idRole:res[0].id,roleName:res[0].name})
+                }).catch((err)=>{
+                    next(err)
+            })
+        })
+    }
+    
     updateMedia(name,newName,description,link,poster,isVisible,score){
         return new Promise((next)=>{
             if (name != undefined && name.trim() != '') {
@@ -82,7 +94,8 @@ let Media = class {
                 new Error('ce media n\'existe pas')
             })
         })
-    }
+    }   
 }
+
 
 module.exports = Media

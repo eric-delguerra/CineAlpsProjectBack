@@ -121,6 +121,25 @@ mysql.createConnection({
             let getAllUser = await user.getAllUser()
             res.json(checkAndChange(getAllUser))
         })
+
+        RoutesUser.route('/getNumberParticipants')
+        .get(async(req,res)=> {
+            let getNumberParticipants = await user.getNumberParticipants()
+            res.json(checkAndChange(getNumberParticipants))
+        })
+
+        RoutesUser.route('/getNumberPublic')
+        .get(async(req,res)=> {
+            let getNumberPublic = await user.getNumberPublic()
+            res.json(checkAndChange(getNumberPublic))
+        })
+
+        RoutesUser.route('/getNumberVotes')
+        .get(async(req,res)=> {
+            let getNumberVotes = await user.getNumberVotes()
+            res.json(checkAndChange(getNumberVotes))
+        })
+
         RoutesUser.route('/getUserByID/:id')
         .get(async (req, res) => {
             let getUserByID = await user.getUserById(req.params.id)

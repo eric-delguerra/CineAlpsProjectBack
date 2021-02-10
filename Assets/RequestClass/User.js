@@ -19,6 +19,29 @@ let User = class {
                 .catch((err)=>next(err))
         })
     }
+    getNumberParticipants(){
+        return new Promise((next)=>{
+            this.db.query('SELECT COUNT (*) FROM user_role WHERE id_role = 3 ')
+                .then((result)=> next(result))
+                .catch((err)=>next(err))
+        })
+    }
+
+    getNumberPublic(){
+        return new Promise((next)=>{
+            this.db.query('SELECT COUNT (*) FROM user_role WHERE id_role = 2 ')
+                .then((result)=> next(result))
+                .catch((err)=>next(err))
+        })
+    }
+
+    getNumberVotes(){
+        return new Promise((next)=>{
+            this.db.query('SELECT COUNT (*) FROM user WHERE asVoted = 1 ')
+                .then((result)=> next(result))
+                .catch((err)=>next(err))
+        })
+    }
 
     getUserById(id){
         return new Promise((next)=>{

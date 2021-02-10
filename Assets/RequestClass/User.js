@@ -78,6 +78,27 @@ let User = class {
         })
     }
 
+    updateUser(first_name,last_name,email,password,phone_number, created_at, last_connection, asVoted){
+        return new Promise((next)=>{
+            if(email != undefined && email.trim() != '' && password != undefined && password.trim() != '') {
+                email = email.trim()
+                this.db.query('SELECT * FROM user WHERE email = ?', [email])
+                    .then((result) => {
+                        if (result[0] !== undefined) {
+                            this.db.query('UPDATE user SET first_name=?, last_name=?, email=?, password=?, phone_number=?, created_at=?, last_connection=?, asVoted=? WHERE email = ?',
+                                [first_name,last_name,email,password,phone_number, created_at, last_connection, asVoted, email])
+                                .then((res)=> next(res))
+                                .catch((err)=>next(err))
+                        }else{
+                            next(new Error('ce user n\'existe pas'))
+                        }
+                    })
+            }else{
+                next(new Error('manque des valeurs'))
+            }
+        })
+    }
+
    checkAuth(email, password) {
         return new Promise((next) => {
             this.db.query('SELECT * FROM user WHERE email = ? ', [email])

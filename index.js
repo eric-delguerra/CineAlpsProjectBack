@@ -121,6 +121,25 @@ mysql.createConnection({
             let getAllUser = await user.getAllUser()
             res.json(checkAndChange(getAllUser))
         })
+
+        RoutesUser.route('/getNumberParticipants')
+        .get(async(req,res)=> {
+            let getNumberParticipants = await user.getNumberParticipants()
+            res.json(checkAndChange(getNumberParticipants))
+        })
+
+        RoutesUser.route('/getNumberPublic')
+        .get(async(req,res)=> {
+            let getNumberPublic = await user.getNumberPublic()
+            res.json(checkAndChange(getNumberPublic))
+        })
+
+        RoutesUser.route('/getNumberVotes')
+        .get(async(req,res)=> {
+            let getNumberVotes = await user.getNumberVotes()
+            res.json(checkAndChange(getNumberVotes))
+        })
+
         RoutesUser.route('/getUserByID/:id')
         .get(async (req, res) => {
             let getUserByID = await user.getUserById(req.params.id)
@@ -140,6 +159,12 @@ mysql.createConnection({
         .delete(async(req,res)=>{
             let deleteUser = await user.deleteUser(req.params.email)
             res.json(checkAndChange(deleteUser))
+        })
+
+        RoutesUser.route('/updateUser')
+        .put(async(req,res)=>{
+            let updateUser = await user.updateUser(req.body.first_name, req.body.last_name, req.body.email, req.body.password, req.body.phone_number ,req.body.created_at, req.body.last_connection, req.body.asVoted)
+            res.json(checkAndChange(updateUser))
         })
 
         RoutesUser.route('/checkAuth')
@@ -265,6 +290,11 @@ mysql.createConnection({
             res.json(checkAndChange(deleteEvent))
         })
 
+        RoutesEvent.route('/updateEvent')
+        .put(async(req,res)=>{
+            let updateEvent = await event.updateEvent(req.body.name,req.body.startDate,req.body.endDate,req.body.availableViewDate,req.body.theme)
+            res.json(checkAndChange(updateEvent))
+        })
 
 
     //ici on concataine nos differente string et on les stock dans la variable RoutesRole pour eviter dans le cas de plusieurs route qui commenceraient

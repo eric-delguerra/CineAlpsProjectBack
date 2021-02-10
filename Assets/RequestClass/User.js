@@ -19,6 +19,29 @@ let User = class {
                 .catch((err)=>next(err))
         })
     }
+    getNumberParticipants(){
+        return new Promise((next)=>{
+            this.db.query('SELECT COUNT (*) FROM user_role WHERE id_role = 3 ')
+                .then((result)=> next(result))
+                .catch((err)=>next(err))
+        })
+    }
+
+    getNumberPublic(){
+        return new Promise((next)=>{
+            this.db.query('SELECT COUNT (*) FROM user_role WHERE id_role = 2 ')
+                .then((result)=> next(result))
+                .catch((err)=>next(err))
+        })
+    }
+
+    getNumberVotes(){
+        return new Promise((next)=>{
+            this.db.query('SELECT COUNT (*) FROM user WHERE asVoted = 1 ')
+                .then((result)=> next(result))
+                .catch((err)=>next(err))
+        })
+    }
 
     getUserById(id){
         return new Promise((next)=>{
@@ -75,6 +98,27 @@ let User = class {
                 }).catch(() => {
                 new Error('Ce User n\'existe pas')
             })
+        })
+    }
+
+    updateUser(first_name,last_name,email,password,phone_number, created_at, last_connection, asVoted){
+        return new Promise((next)=>{
+            if(email != undefined && email.trim() != '' && password != undefined && password.trim() != '') {
+                email = email.trim()
+                this.db.query('SELECT * FROM user WHERE email = ?', [email])
+                    .then((result) => {
+                        if (result[0] !== undefined) {
+                            this.db.query('UPDATE user SET first_name=?, last_name=?, email=?, password=?, phone_number=?, created_at=?, last_connection=?, asVoted=? WHERE email = ?',
+                                [first_name,last_name,email,password,phone_number, created_at, last_connection, asVoted, email])
+                                .then((res)=> next(res))
+                                .catch((err)=>next(err))
+                        }else{
+                            next(new Error('ce user n\'existe pas'))
+                        }
+                    })
+            }else{
+                next(new Error('manque des valeurs'))
+            }
         })
     }
 

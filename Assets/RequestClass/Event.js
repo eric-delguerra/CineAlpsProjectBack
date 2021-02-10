@@ -37,6 +37,27 @@ let Event = class {
                 }
             })
         }
+
+        updateEvent(name,startDate,endDate,availableViewDate,theme){
+            return new Promise((next)=>{
+                if(name != undefined && name.trim() != '' && startDate != undefined && startDate.trim() != '') {
+                    name = name.trim()
+                    this.db.query('SELECT * FROM event WHERE name = ?', [name])
+                        .then((result) => {
+                            if (result[0] !== undefined) {
+                                this.db.query('UPDATE event SET name=?, startDate=?, endDate=?, availableViewDate=?, theme=?  WHERE name = ?',
+                                    [name,startDate,endDate,availableViewDate,theme,name])
+                                    .then((res)=> next(res))
+                                    .catch((err)=>next(err))
+                            }else{
+                                next(new Error('cet event n\'existe pas'))
+                            }
+                        })
+                }else{
+                    next(new Error('manque des valeurs'))
+                }
+            })
+        }
         
         deleteEvent(idEvent){
             return new Promise((next)=> {

@@ -13,9 +13,9 @@ let Role = class {
                 .catch((err)=>next(err))
         })
     }
-    getRoleById(id){
+    getRoleByName(name){
         return new Promise((next)=>{
-            this.db.query('SELECT * FROM role WHERE id = ? ',[id])
+            this.db.query('SELECT * FROM role WHERE name = ? ',[name])
                 .then((result)=> next(result[0]))
                 .catch((err)=>next(err))
         })

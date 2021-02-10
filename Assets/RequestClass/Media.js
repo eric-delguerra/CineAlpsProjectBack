@@ -8,7 +8,10 @@ let Media = class {
     getAllMedias(){
         return new Promise((next)=>{
             this.db.query('SELECT * FROM media  ')
-                .then((result)=> next(result))
+                .then((result)=> {
+                    console.log(result)
+                    next(result)
+                })
                 .catch((err)=>next(err))
         })
     }

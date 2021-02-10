@@ -63,9 +63,15 @@ let User = class {
                       }else{
                           let createUserAt = new Date()
 
-                          this.db.query('INSERT INTO user (first_name, last_name, email, password, phone_number, created_at, last_connection)VALUES (?,?,?,?,?,?,?)',[first_name, last_name, email, hashedPassword, phone_number, createUserAt, createUserAt])
+                          this.db.query('INSERT INTO user (first_name, last_name, email, password, phone_number, created_at, last_connection)VALUES (?,?,?,?,?,?,?)',
+                              [first_name, last_name, email, hashedPassword, phone_number, createUserAt, createUserAt])
                               .then((res)=>{
-                                  next('User '+ email +' a bien été ajouté' )
+                                  const RecupRole= Promise.resolve(this.role.getRoleByName('public'))
+                                  RecupRole.then((role)=>{
+                                      console.log(role)
+                                      this.db.query('INSERT INTO user_role (id_user,id_role) VALUES (?,?)',[res.insertId,role.id])
+                                          .then(()=> next('User '+ email +' a bien été ajouté' ))
+                                  })
                               }).catch((err)=>{
                                   next(err)
                           })

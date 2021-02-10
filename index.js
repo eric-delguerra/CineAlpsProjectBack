@@ -122,6 +122,12 @@ mysql.createConnection({
             res.json(checkAndChange(getAllUser))
         })
 
+        RoutesUser.route('/getUserMedia')
+        .get(async (req, res) => {
+            let getUserMedia = await user.getUserMedia(req.params.id)
+            res.json(checkAndChange(getUserMedia))
+        })
+
         RoutesUser.route('/getNumberParticipants')
         .get(async(req,res)=> {
             let getNumberParticipants = await user.getNumberParticipants()
@@ -144,6 +150,13 @@ mysql.createConnection({
         .get(async (req, res) => {
             let getUserByID = await user.getUserById(req.params.id)
             res.json(checkAndChange(getUserByID))
+        })
+
+        RoutesUser.route('/addUserMedia')
+        .post(async(req,res)=>{
+            const hashedPassword = await bcrypt.hash(req.body.password, 10)
+            let addUserMedia = await user.addUserMedia(req.body.MediaName,req.body.description,req.body.link,req.body.poster,req.body.first_name, req.body.last_name, req.body.email, hashedPassword, req.body.phone_number)
+            res.json(checkAndChange(addUserMedia))
         })
         
         RoutesUser.route('/addUser')
@@ -204,6 +217,12 @@ mysql.createConnection({
         .put(async(req,res)=>{
             let updateMedia = await media.updateMedia(req.body.name,req.body.newName,req.body.description,req.body.link,req.body.poster,req.body.isVisible,req.body.score)
             res.json(checkAndChange(updateMedia))
+        })
+
+        RoutesMedia.route('/getMediaByID/:id')
+        .get(async (req, res) => {
+            let getMediaById = await role.getMediaById(req.params.id)
+            res.json(checkAndChange(getMediaById))
         })
 
 // routes concernant les awards

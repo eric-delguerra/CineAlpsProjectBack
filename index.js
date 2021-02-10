@@ -111,8 +111,8 @@ mysql.createConnection({
             let updateCategory = await category.updateCategory(req.body.name,req.body.newName)
             res.json(checkAndChange(updateCategory))
         })
- // routes concernant l'utilisateur
 
+ // routes concernant l'utilisateur
         RoutesUser.route('/getAllUser')
         .get(async(req,res)=> {
             let getAllUser = await user.getAllUser()

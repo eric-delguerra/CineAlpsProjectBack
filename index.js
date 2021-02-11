@@ -155,7 +155,7 @@ mysql.createConnection({
         RoutesUser.route('/addUserMedia')
         .post(async(req,res)=>{
             const hashedPassword = await bcrypt.hash(req.body.password, 10)
-            let addUserMedia = await user.addUserMedia(req.body.MediaName,req.body.description,req.body.link,req.body.poster,req.body.first_name, req.body.last_name, req.body.email, hashedPassword, req.body.phone_number)
+            let addUserMedia = await user.addUserMedia(req.body ,hashedPassword )
             res.json(checkAndChange(addUserMedia))
         })
         
@@ -267,13 +267,20 @@ mysql.createConnection({
             let getAllInvitation = await invitation.getAllInvitation()
             res.json(checkAndChange(getAllInvitation))
         })
+
+        RoutesInvitation.route('/getIdWithEmail')
+        .get(async (req, res) => {
+            let getIdWithEmail = await invitation.getIdWithEmail(req.body.email)
+            res.json(checkAndChange(getIdWithEmail))
+        })
+
     RoutesInvitation.route('/getAllInvitationsNotInvited')
         .get(async (req, res) => {
         let getAllInvitationsNotInvited = await invitation.getAllInvitationsNotInvited()
             res.json(checkAndChange(getAllInvitationsNotInvited))
         })
 
-    RoutesInvitation.route('/getInvitationByID/:id')
+    RoutesInvitation.route('/getInvitationId/:id')
         .get(async (req, res) => {
             let Invitation = await invitation.getInvitationId(req.params.id)
             res.json(checkAndChange(Invitation))
@@ -290,11 +297,16 @@ mysql.createConnection({
         })
 
         // routes concernant l'event
-
         RoutesEvent.route('/getAllEvents')
         .get(async (req, res) => {
             let getAllEvents = await event.getAllEvents()
             res.json(checkAndChange(getAllEvents))
+        })
+
+        RoutesEvent.route('/getEventByID/:id')
+        .get(async (req, res) => {
+            let getEventById = await event.getEventById(req.params.id)
+            res.json(checkAndChange(getEventById))
         })
 
         RoutesEvent.route('/addEvent')
@@ -314,7 +326,6 @@ mysql.createConnection({
             let updateEvent = await event.updateEvent(req.body.name,req.body.startDate,req.body.endDate,req.body.availableViewDate,req.body.theme)
             res.json(checkAndChange(updateEvent))
         })
-
 
     //ici on concataine nos differente string et on les stock dans la variable RoutesRole pour eviter dans le cas de plusieurs route qui commenceraient
     // par le même chemin d'avoir a tout retapper à chaques fois, il suffira ensuite de rajouter uniquement la sous-route désiré

@@ -19,18 +19,18 @@ let Media = class {
                 .catch((err)=>next(err))
         })
     }
-    addMedia(MediaName,description,link,poster, isVisible, score, technique, creation_date, realisationCondition){
+    addMedia(mediaName,description,link,poster, isVisible, score, technique, creation_date, realisationCondition){
         return new Promise((next)=>{
-            if(MediaName != undefined && MediaName.trim() != ''){
-                MediaName = MediaName.trim()
-                this.db.query('SELECT name FROM media WHERE name =?',[MediaName])
+            if(mediaName != undefined && mediaName.trim() != ''){
+                mediaName = mediaName.trim()
+                this.db.query('SELECT name FROM media WHERE name =?',[mediaName])
                     .then((result)=>{
                         if(result[0] !== undefined){
                             next(new Error('Ce media existe déjà'))
                         }else{
-                            this.db.query('INSERT INTO media (name,description,link,poster, isVisible, score, technique, creation_date, realisationCondition)VALUES (?,?,?,?,?,?,?,?,?)',[MediaName,description,link,poster, isVisible, score, technique, creation_date, realisationCondition])
+                            this.db.query('INSERT INTO media (name,description,link,poster, isVisible, score, technique, creation_date, realisationCondition)VALUES (?,?,?,?,?,?,?,?,?)',[mediaName,description,link,poster, isVisible, score, technique, creation_date, realisationCondition])
                                 .then((res)=>{
-                                    next('Le media: '+ MediaName+' a bien été ajoutée' )
+                                    next('Le media: '+ mediaName+' a bien été ajoutée' )
                                 }).catch((err)=>{
                                 next(err)
                             })

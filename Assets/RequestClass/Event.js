@@ -12,6 +12,14 @@ let Event = class {
                     .catch((err)=>next(err))
             })
         }
+
+        getEventById(id){
+            return new Promise((next)=>{
+                this.db.query('SELECT * FROM event WHERE id = ? ',[id])
+                    .then((result)=> next(result[0]))
+                    .catch((err)=>next(err))
+            })
+        }
        
         addEvent(name, startDate, endDate, availableViewDate, theme){
             return new Promise((next)=>{

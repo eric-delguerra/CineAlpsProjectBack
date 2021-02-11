@@ -94,7 +94,6 @@ let Role = class {
             })
         })
     }
-
 }
 
 module.exports = Role

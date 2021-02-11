@@ -1,16 +1,18 @@
+
 //c'est la qu'on va faire nos requetes en base de données
 let Media = class {
 //on appel notre class dans un autre fichier et on lui passe en parametres la base de données sur laquelle on travail
     constructor(_dbCineAlpes){
         this.db = _dbCineAlpes
+
     }
 //le declaration se fait sous forme de promesse avec le parametre next qui est une fonction qui renverra le resultat que ce soit dans le .then ou dans le .catch
     getAllMedias(){
         return new Promise((next)=>{
             this.db.query('SELECT * FROM media  ')
                 .then((result)=> {
-                    console.log(result)
-                    next(result)
+                    this.db.query('SELECT * FROM user AS u LEFT JOIN user_media AS um ON u.id = um.id_user LEFT JOIN media ON um.id_media = media.id  ')
+                        .then((media)=>next(media))
                 })
                 .catch((err)=>next(err))
         })

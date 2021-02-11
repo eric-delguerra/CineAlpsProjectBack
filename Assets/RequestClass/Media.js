@@ -99,7 +99,25 @@ let Media = class {
                 new Error('ce media n\'existe pas')
             })
         })
-    }   
+    }
+    addVoteToMedia(idMedia,idUser){
+        return new Promise((next)=>{
+            this.db.query('SELECT score FROM media WHERE id = ?',[idMedia])
+                .then((score)=>{
+                    let newScore = score[0].score + 1
+
+                    this.db.query('UPDATE media SET score = ? WHERE id = ?',[newScore,idMedia])
+                        .then((res)=>{
+                            this.db.query('UPDATE user SET asVoted = 1 WHERE id = ?',[idUser])
+                                .then((ok)=>{
+                                    next(ok)
+                                })
+                        })
+                }).catch((e)=>{
+                    next(e)
+            })
+        })
+    }
 }
 
 

@@ -221,8 +221,13 @@ mysql.createConnection({
 
         RoutesMedia.route('/getMediaByID/:id')
         .get(async (req, res) => {
-            let getMediaById = await role.getMediaById(req.params.id)
+            let getMediaById = await media.getMediaById(req.params.id)
             res.json(checkAndChange(getMediaById))
+        })
+    RoutesMedia.route('/addVoteToMedia/:id')
+        .post(async (req, res) => {
+            let addVoteToMedia = await media.addVoteToMedia(req.params.id,req.body.idUser)
+            res.json(checkAndChange(addVoteToMedia))
         })
 
 // routes concernant les awards

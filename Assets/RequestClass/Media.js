@@ -1,5 +1,7 @@
 
 //c'est la qu'on va faire nos requetes en base de données
+const upload = require('express-fileupload')
+
 let Media = class {
 //on appel notre class dans un autre fichier et on lui passe en parametres la base de données sur laquelle on travail
     constructor(_dbCineAlpes){
@@ -81,6 +83,29 @@ let Media = class {
             }
         })
     }
+
+    posterUpload(name, uploadedPoster){
+        return new Promise((next)=>{
+            if (name != undefined && name.trim() != '') {
+                name = name.trim()
+                this.db.query('SELECT * FROM media WHERE name = ?', [name])
+                    .then((result) => {
+                        if (result[0] !== undefined) {
+                            this.db.query('UPDATE media SET poster = ?  WHERE name = ?',
+                                [uploadedPoster, name])
+                                .then((res)=> next(res))
+                                .catch((err)=>next(err))
+                        }else{
+                            next(new Error('ce media n\'existe pas'))
+                        }
+                    })
+            }else{
+                next(new Error('pas de valeur'))
+            }
+        })
+
+    }
+
     deleteMedia(idMedia){
         return new Promise((next)=> {
             this.db.query('SELECT * FROM media WHERE id = ?',[idMedia])

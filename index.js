@@ -19,6 +19,7 @@ const UserClass = require('./Assets/RequestClass/User')
 const EventClass = require('./Assets/RequestClass/Event')
 const bcrypt = require('bcrypt')
 const morgan = require('morgan')('dev');
+const upload = require('express-fileupload')
 
 app.listen(process.env[`${process.env.MODE}_PORT`]);
 
@@ -29,6 +30,8 @@ mysql.createConnection({
     password: ''
 }).then((db) => {
 
+    console.log("ca passe")
+
     //configuration de notre type de requètes express(ici du http)
     app.use((req, res, next) => {
         res.setHeader('Access-Control-Allow-Headers', 'Content-type,Authorization');
@@ -38,6 +41,7 @@ mysql.createConnection({
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: true}));
     app.use(morgan);
+    app.use(upload());
 
     let RoutesRole = express.Router()
     let RoutesAward = express.Router()
@@ -98,6 +102,14 @@ mysql.createConnection({
             let getCategoryByID = await category.getCategoryById(req.params.id)
             res.json(checkAndChange(getCategoryByID))
         })
+
+        RoutesCategory.route('/getIdCategoryByName')
+        .get(async (req, res) => {
+            let getIdCategoryByName = await category.getIdCategoryByName(req.body.name)
+            res.json(checkAndChange( getIdCategoryByName))
+        })
+
+       
     RoutesCategory.route('/addCategory')
         .post(async(req,res)=>{
 
@@ -221,8 +233,27 @@ mysql.createConnection({
 
         RoutesMedia.route('/getMediaByID/:id')
         .get(async (req, res) => {
-            let getMediaById = await role.getMediaById(req.params.id)
+            let getMediaById = await media.getMediaById(req.params.id)
             res.json(checkAndChange(getMediaById))
+        })
+
+        RoutesMedia.route('/posterUpload')
+        .put(async (req,res) => {
+           if (req.files) {
+            var file = req.files.file
+            var uploadedPoster = file.name
+
+            file.mv('./ImagePoster/'+uploadedPoster, function (err) {
+                if (err) {
+                    res.send(err)
+                } 
+                else { res.send("File Uploaded")}
+             })
+           }
+           else { res.send("Fail : no file Uploaded")}
+
+           let posterUpload = await media.posterUpload(req.body.name, uploadedPoster)
+            res.json(checkAndChange(posterUpload))
         })
 
 // routes concernant les awards

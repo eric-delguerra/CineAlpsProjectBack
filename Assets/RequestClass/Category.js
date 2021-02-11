@@ -19,6 +19,15 @@ let Category = class {
                 .catch((err)=>next(err))
         })
     }
+
+    getIdCategoryByName(name){
+        return new Promise((next)=>{
+            this.db.query('SELECT id FROM category WHERE name = ?',[name])
+                .then((result)=> next(result))
+                .catch((err)=>next(err))
+        })
+    }
+
     addCategory(categoryName){
         return new Promise((next)=>{
           if(categoryName != undefined && categoryName.trim() != ''){

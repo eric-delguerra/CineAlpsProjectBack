@@ -2,6 +2,7 @@
 const bcrypt = require('bcrypt');
 const RoleClass = require('./Role')
 const MediaClass = require('./Media');
+const CategoryClass = require('./Category')
 const { promises } = require('fs');
 //c'est la qu'on va faire nos requetes en base de données
 
@@ -12,6 +13,7 @@ let User = class {
         this.db = _dbCineAlpes
         this.role = new RoleClass(this.db)
         this.media = new MediaClass(this.db)
+        this.category = new CategoryClass(this.db)
     }
 //le declaration se fait sous forme de promesse avec le parametre next qui est une fonction qui renverra le resultat que ce soit dans le .then ou dans le .catch
     getAllUser(){
@@ -72,6 +74,9 @@ let User = class {
                         if(result[0] !== undefined){
                             next(new Error('Ce media existe déjà'))
                         }else{
+                           /* var myCategoryId =  this.category.getIdCategoryByName(data.category)
+                            console.log(myCategoryId)*/
+
                             this.db.query('INSERT INTO media (name,description,link,poster,isVisible, score, technique, creation_date, realisationCondition)VALUES (?,?,?,?,?,?,?,?,?)',[data.mediaName, data.description, data.link, data.poster, data.isVisible, data.score, data.technique, data.creation_date, data.realisationCondition])
                                 .then((media)=>{
                                     
@@ -87,6 +92,7 @@ let User = class {
                                         
                                             this.db.query('INSERT INTO category_media (id_category, id_media) VALUES (?,?)',[data.category,media.insertId])
                                             .then(()=> {
+
                                             })
                                             .catch((err)=>console.log(err))
                                         

@@ -24,7 +24,7 @@ let Media = class {
                 .catch((err)=>next(err))
         })
     }
-    addMedia(MediaName,description,link,poster){
+    addMedia(MediaName,description,link,poster, isVisible, score, technique, creation_date, realisationCondition){
         return new Promise((next)=>{
             if(MediaName != undefined && MediaName.trim() != ''){
                 MediaName = MediaName.trim()
@@ -33,7 +33,7 @@ let Media = class {
                         if(result[0] !== undefined){
                             next(new Error('Ce media existe déjà'))
                         }else{
-                            this.db.query('INSERT INTO media (name,description,link,poster)VALUES (?,?,?,?)',[MediaName,description,link,poster])
+                            this.db.query('INSERT INTO media (name,description,link,poster, isVisible, score, technique, creation_date, realisationCondition)VALUES (?,?,?,?,?,?,?,?,?)',[MediaName,description,link,poster, isVisible, score, technique, creation_date, realisationCondition])
                                 .then((res)=>{
                                     next('Le media: '+ MediaName+' a bien été ajoutée' )
                                 }).catch((err)=>{
@@ -59,8 +59,8 @@ let Media = class {
             })
         })
     }
-    
-    updateMedia(name,newName,description,link,poster,isVisible,score){
+
+    updateMedia(name,newName,description,link,poster, isVisible, score, technique, creation_date, realisationCondition){
         return new Promise((next)=>{
             if (name != undefined && name.trim() != '') {
 
@@ -68,8 +68,8 @@ let Media = class {
                 this.db.query('SELECT * FROM media WHERE name = ?', [name])
                     .then((result) => {
                         if (result[0] !== undefined) {
-                            this.db.query('UPDATE media SET name = ? ,description = ?, link = ?,poster=?, isVisible=?, score=?  WHERE name = ?',
-                                [newName,description,link,poster,isVisible,score,name])
+                            this.db.query('UPDATE media SET name = ? ,description = ?, link = ?,poster=?, isVisible = ?, score = ?, technique = ?, creation_date = ?, realisationCondition = ? WHERE name = ?',
+                                [newName,description,link,poster,isVisible,score, technique, creation_date, realisationCondition, name])
                                 .then((res)=> next(res))
                                 .catch((err)=>next(err))
                         }else{

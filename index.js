@@ -205,7 +205,7 @@ mysql.createConnection({
         })
     RoutesMedia.route('/addMedia')
         .post(async(req,res)=>{
-            let addMedia = await media.addMedia(req.body.MediaName,req.body.description,req.body.link,req.body.poster)
+            let addMedia = await media.addMedia(req.body.MediaName,req.body.description,req.body.link,req.body.poster, req.body.isVisible, req.body.score, req.body.technique, req.body.creation_date, req.body.realisationCondition)
             res.json(checkAndChange(addMedia))
         })
     RoutesMedia.route('/deleteMedia/:id')
@@ -215,7 +215,7 @@ mysql.createConnection({
         })
     RoutesMedia.route('/updateMedia')
         .put(async(req,res)=>{
-            let updateMedia = await media.updateMedia(req.body.name,req.body.newName,req.body.description,req.body.link,req.body.poster,req.body.isVisible,req.body.score)
+            let updateMedia = await media.updateMedia(req.body.name, req.body.newName, req.body.description, req.body.link, req.body.poster, req.body.isVisible, req.body.score, req.body.technique, req.body.creation_date, req.body.realisationCondition)
             res.json(checkAndChange(updateMedia))
         })
 

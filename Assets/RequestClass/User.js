@@ -62,29 +62,46 @@ let User = class {
         })
     }
 
-    addUserMedia(MediaName,description,link,poster, first_name, last_name, email, hashedPassword, phone_number){
+    addUserMedia(data, hashedPassword){
         return new Promise((next)=>{
 
-            if(MediaName != undefined && MediaName.trim() != ''){
-                MediaName = MediaName.trim()
-                this.db.query('SELECT name FROM media WHERE name =?',[MediaName])
+            if(data.mediaName != undefined && data.mediaName.trim() != ''){
+                data.mediaName = data.mediaName.trim()
+                this.db.query('SELECT name FROM media WHERE name =?',[data.mediaName])
                     .then((result)=>{
                         if(result[0] !== undefined){
                             next(new Error('Ce media existe déjà'))
                         }else{
-                            this.db.query('INSERT INTO media (name,description,link,poster)VALUES (?,?,?,?)',[MediaName,description,link,poster])
-                                .then((res)=>{
+                            this.db.query('INSERT INTO media (name,description,link,poster,isVisible, score, technique, creation_date, realisationCondition)VALUES (?,?,?,?,?,?,?,?,?)',[data.mediaName, data.description, data.link, data.poster, data.isVisible, data.score, data.technique, data.creation_date, data.realisationCondition])
+                                .then((media)=>{
                                     
-                                const myIdUser =  Promise.resolve(this.addUser(first_name, last_name, email, hashedPassword, phone_number))
+                                const myIdUser =  Promise.resolve(this.addUser(data.first_name, data.last_name, data.email, hashedPassword, data.phone_number))
                                 myIdUser.then((idUser)=>{
-                                    this.db.query('INSERT INTO user_media (id_media, id_user) VALUES (?,?) ',[res.insertId, idUser.insertId])
-                                    .then(()=> {console.log("insertion User_media reussi")})
+
+                                    this.db.query('INSERT INTO user_media (id_media, id_user) VALUES (?,?) ',[media.insertId, idUser.insertId])
+                                    .then((param)=> {
+                                        
+                                        this.db.query('INSERT INTO user_role (id_role, id_user) VALUES (?,?) ',[data.role, idUser.insertId])
+                                        .then(()=> {
+                                            console.log("insertion User_role reussi")
+                                        
+                                            this.db.query('INSERT INTO category_media (id_category, id_media) VALUES (?,?)',[data.category,media.insertId])
+                                            .then(()=> {
+                                            })
+                                            .catch((err)=>console.log(err))
+                                        
+                                        })
+                                        .catch((err)=>{console.log(err)})
+                                        
+                                        console.log("insertion user_media reussi")})
                                     .catch((err)=>{console.log(err)})
+
+                            
                                  }).catch((err)=> {
                                      console.log(err)
                                  })  
                                  
-                                  next('Le media: '+ MediaName+' a bien été ajoutée' )
+                                  next('Le media: '+ data.mediaName+' a bien été ajoutée' )
                                 }).catch((err)=>{
                                 next(err)
                             })

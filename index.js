@@ -166,6 +166,7 @@ mysql.createConnection({
 
         RoutesUser.route('/addUserMedia')
         .post(async(req,res)=>{
+            console.log(req.body)
             const hashedPassword = await bcrypt.hash(req.body.password, 10)
             let addUserMedia = await user.addUserMedia(req.body ,hashedPassword )
             res.json(checkAndChange(addUserMedia))

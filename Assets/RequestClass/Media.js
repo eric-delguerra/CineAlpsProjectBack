@@ -13,7 +13,7 @@ let Media = class {
         return new Promise((next)=>{
             this.db.query('SELECT * FROM media  ')
                 .then((result)=> {
-                    this.db.query('SELECT * FROM user AS u LEFT JOIN user_media AS um ON u.id = um.id_user LEFT JOIN media ON um.id_media = media.id  ')
+                    this.db.query('SELECT * FROM user AS u LEFT JOIN user_media AS um ON u.id = um.id_user LEFT JOIN media ON um.id_media = media.id LEFT JOIN user_role AS ur ON u.id = ur.id_user LEFT JOIN role AS r ON r.id = ur.id_role WHERE r.id =3 ')
                         .then((media)=>next(media))
                 })
                 .catch((err)=>next(err))

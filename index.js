@@ -312,6 +312,12 @@ mysql.createConnection({
             res.json(checkAndChange(getAllInvitationsNotInvited))
         })
 
+    RoutesInvitation.route('/sendValidInvitation')
+        .post(async (req, res) => {
+            let sendmail = await invitation.sendMail(req.body.email)
+            res.json(checkAndChange(sendmail))
+        })
+
     RoutesInvitation.route('/getInvitationId/:id')
         .get(async (req, res) => {
             let Invitation = await invitation.getInvitationId(req.params.id)
